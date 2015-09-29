@@ -45,14 +45,14 @@ U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_DEV_0 | U8G_I2C_OPT_NO_ACK | U8G_I2C_OPT_F
 #define PADDLE_LEND 7
 #define PADDLE_LMID 8
 
-#define SPD0 0
-#define SPD1 40
-
 #define PADDLE_XL 0
 #define PADDLE_XR 126
 
-#define JOYPIN_L 2
-#define JOYPIN_R 0
+#define SPD0 0
+#define SPD1 48 //Ball speed - the smaller this number is, the faster the ball goes
+
+#define JOYPIN_L 2 //Analog pin of the left joystick
+#define JOYPIN_R 0 //Analog pin of the right joystick
 
 int16_t joyYL;
 int16_t joyYR;
@@ -105,8 +105,8 @@ void movement(uint8_t i, uint8_t num) {
     ballX = lastballX - map(movementVal, SPD0, SPD1, 0, 128);
     ballY = lastballY + map(movementVal, SPD0, SPD1, 0, num);
   }
-  u8g.drawPixel(ballX, ballY);
-  checkCollision();
+  ballX = constrain(ballX, 0, 128);
+  ballY = constrain(ballY, 0, 64);
 }
 
 void checkCollision() {
@@ -116,11 +116,11 @@ void checkCollision() {
     assignDirection(UP_RIGHT, UP_LEFTS, UP_RIGHTS, UP_LEFTS, DOWN_RIGHT, DOWN_LEFTS, DOWN_RIGHTS, DOWN_LEFTS);
   } else if ( ((ballY >= paddleR + 4) && (ballY <= paddleR + 5)) && (ballX >= PADDLE_XR)) { //Right Paddle BOTTOM
     assignDirection(UP_RIGHT, UP_LEFT, UP_RIGHTS, UP_LEFT, DOWN_RIGHT, DOWN_LEFT, DOWN_RIGHTS, DOWN_LEFT);
-  } else if ( ((ballY >= paddleL) && (ballY <= paddleL + 2)) && ((ballX >= PADDLE_XL + 1) && (ballX <= PADDLE_XL + 3)) ) { //Left Paddle TOP
+  } else if ( ((ballY >= paddleL) && (ballY <= paddleL + 2)) && (ballX <= PADDLE_XL + 2)) { //Left Paddle TOP
     assignDirection(UP_LEFT, UP_RIGHT, UP_LEFTS, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT, DOWN_LEFTS, DOWN_RIGHT);
-  } else if ( ((ballY >= paddleL + 3) && (ballY <= paddleL + 3)) && ((ballX >= PADDLE_XL + 1) && (ballX <= PADDLE_XL + 3)) ) { //Left Paddle TOP-MIDDLE
+  } else if ( ((ballY >= paddleL + 3) && (ballY <= paddleL + 3)) && (ballX <= PADDLE_XL + 2)) { //Left Paddle TOP-MIDDLE
     assignDirection(UP_LEFT, UP_RIGHTS, UP_LEFTS, UP_RIGHTS, DOWN_LEFT, DOWN_RIGHTS, DOWN_LEFTS, DOWN_RIGHTS);
-  } else if ( ((ballY >= paddleL + 4) && (ballY <= paddleL + 5)) && ((ballX >= PADDLE_XL + 1) && (ballX <= PADDLE_XL + 3)) ) { //Left Paddle BOTTOM
+  } else if ( ((ballY >= paddleL + 4) && (ballY <= paddleL + 5)) && (ballX <= PADDLE_XL + 2)) { //Left Paddle BOTTOM
     assignDirection(UP_LEFT, UP_RIGHT, UP_LEFTS, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT, DOWN_LEFTS, DOWN_RIGHT);
   } else if (ballX >= 128) { //Right wall
     rndDirection = random(2, 6);
@@ -162,8 +162,8 @@ void draw(void) {
 
   checkCollision();
   u8g.setFont(u8g_font_helvB08);
-  u8g.setPrintPos(27, 35);
-  u8g.print(movementVal);
+  /*u8g.setPrintPos(27, 35);
+  u8g.print(ballY);*/
 
   u8g.setPrintPos(32, 15);
   u8g.print(scoreL);
