@@ -46,7 +46,7 @@ U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_DEV_0 | U8G_I2C_OPT_NO_ACK | U8G_I2C_OPT_F
 #define PADDLE_LMID 8
 
 #define SPD0 0
-#define SPD1 48
+#define SPD1 40
 
 #define PADDLE_XL 0
 #define PADDLE_XR 126
@@ -61,10 +61,10 @@ int16_t paddleR;
 uint8_t movementVal;
 uint16_t scoreR;
 uint16_t scoreL;
-uint8_t bodX;
-uint8_t bodY;
-uint8_t lastBodX = 64;
-uint8_t lastBodY = 32;
+uint8_t ballX;
+uint8_t ballY;
+uint8_t lastballX = 64;
+uint8_t lastballY = 32;
 uint8_t direct = START;
 uint8_t lastDirection;
 uint8_t rndDirection;
@@ -72,9 +72,9 @@ uint8_t rndDirection;
 void assignDirection(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e, uint8_t f, uint8_t g, uint8_t h) {
   movementVal = 0;
   lastDirection = direct;
-  lastBodX = bodX;
-  lastBodY = bodY;
-   if (lastDirection == a) {direct = b;}
+  lastballX = ballX;
+  lastballY = ballY;
+  if (lastDirection == a) {direct = b;}
   else if (lastDirection == c) {direct = d;}
   else if (lastDirection == e) {direct = f;}
   else if (lastDirection == g) {direct = h;}
@@ -89,58 +89,56 @@ void assignDirection(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e, uint
 
 void movement(uint8_t i, uint8_t num) {
   if (direct == START) {
-    lastBodX = 64;
-    lastBodY = 32;
+    lastballX = 64;
+    lastballY = 32;
   }
   if (i == UP_RIGHT) {
-    bodX = lastBodX + map(movementVal, SPD0, SPD1, 0, 128);
-    bodY = lastBodY - map(movementVal, SPD0, SPD1, 0, num);
+    ballX = lastballX + map(movementVal, SPD0, SPD1, 0, 128);
+    ballY = lastballY - map(movementVal, SPD0, SPD1, 0, num);
   } else if (i == UP_LEFT) {
-    bodX = lastBodX - map(movementVal, SPD0, SPD1, 0, 128);
-    bodY = lastBodY - map(movementVal, SPD0, SPD1, 0, num);
+    ballX = lastballX - map(movementVal, SPD0, SPD1, 0, 128);
+    ballY = lastballY - map(movementVal, SPD0, SPD1, 0, num);
   } else if (i == DOWN_RIGHT) {
-    bodX = lastBodX + map(movementVal, SPD0, SPD1, 0, 128);
-    bodY = lastBodY + map(movementVal, SPD0, SPD1, 0, num);
+    ballX = lastballX + map(movementVal, SPD0, SPD1, 0, 128);
+    ballY = lastballY + map(movementVal, SPD0, SPD1, 0, num);
   } else if (i == DOWN_LEFT) {
-    bodX = lastBodX - map(movementVal, SPD0, SPD1, 0, 128);
-    bodY = lastBodY + map(movementVal, SPD0, SPD1, 0, num);
+    ballX = lastballX - map(movementVal, SPD0, SPD1, 0, 128);
+    ballY = lastballY + map(movementVal, SPD0, SPD1, 0, num);
   }
-  u8g.drawPixel(bodX, bodY);
+  u8g.drawPixel(ballX, ballY);
   checkCollision();
 }
 
 void checkCollision() {
-  if ( ((bodY >= paddleR) && (bodY <= paddleR + 2)) && (bodX >= PADDLE_XR)) { //Right Paddle TOP
+  if ( ((ballY >= paddleR) && (ballY <= paddleR + 2)) && (ballX >= PADDLE_XR)) { //Right Paddle TOP
     assignDirection(UP_RIGHT, UP_LEFT, UP_RIGHTS, UP_LEFT, DOWN_RIGHT, DOWN_LEFT, DOWN_RIGHTS, DOWN_LEFT);
-  } else if ( ((bodY >= paddleR + 3) && (bodY <= paddleR + 3)) && (bodX >= PADDLE_XR)) { //Right Paddle TOP-MIDDLE
+  } else if ( ((ballY >= paddleR + 3) && (ballY <= paddleR + 3)) && (ballX >= PADDLE_XR)) { //Right Paddle TOP-MIDDLE
     assignDirection(UP_RIGHT, UP_LEFTS, UP_RIGHTS, UP_LEFTS, DOWN_RIGHT, DOWN_LEFTS, DOWN_RIGHTS, DOWN_LEFTS);
-  } else if ( ((bodY >= paddleR + 4) && (bodY <= paddleR + 5)) && (bodX >= PADDLE_XR)) { //Right Paddle BOTTOM
+  } else if ( ((ballY >= paddleR + 4) && (ballY <= paddleR + 5)) && (ballX >= PADDLE_XR)) { //Right Paddle BOTTOM
     assignDirection(UP_RIGHT, UP_LEFT, UP_RIGHTS, UP_LEFT, DOWN_RIGHT, DOWN_LEFT, DOWN_RIGHTS, DOWN_LEFT);
-  } else if ( ((bodY >= paddleL) && (bodY <= paddleL + 2)) && ((bodX >= PADDLE_XL + 1) && (bodX <= PADDLE_XL + 3)) ) { //Left Paddle TOP
+  } else if ( ((ballY >= paddleL) && (ballY <= paddleL + 2)) && ((ballX >= PADDLE_XL + 1) && (ballX <= PADDLE_XL + 3)) ) { //Left Paddle TOP
     assignDirection(UP_LEFT, UP_RIGHT, UP_LEFTS, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT, DOWN_LEFTS, DOWN_RIGHT);
-  } else if ( ((bodY >= paddleL + 3) && (bodY <= paddleL + 3)) && ((bodX >= PADDLE_XL + 1) && (bodX <= PADDLE_XL + 3)) ) { //Left Paddle TOP-MIDDLE
+  } else if ( ((ballY >= paddleL + 3) && (ballY <= paddleL + 3)) && ((ballX >= PADDLE_XL + 1) && (ballX <= PADDLE_XL + 3)) ) { //Left Paddle TOP-MIDDLE
     assignDirection(UP_LEFT, UP_RIGHTS, UP_LEFTS, UP_RIGHTS, DOWN_LEFT, DOWN_RIGHTS, DOWN_LEFTS, DOWN_RIGHTS);
-  } else if ( ((bodY >= paddleL + 4) && (bodY <= paddleL + 5)) && ((bodX >= PADDLE_XL + 1) && (bodX <= PADDLE_XL + 3)) ) { //Left Paddle BOTTOM
+  } else if ( ((ballY >= paddleL + 4) && (ballY <= paddleL + 5)) && ((ballX >= PADDLE_XL + 1) && (ballX <= PADDLE_XL + 3)) ) { //Left Paddle BOTTOM
     assignDirection(UP_LEFT, UP_RIGHT, UP_LEFTS, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT, DOWN_LEFTS, DOWN_RIGHT);
-  } else if (bodX >= 128) { //Right wall
+  } else if (ballX >= 128) { //Right wall
     rndDirection = random(2, 6);
     direct = START;
     movementVal = 0;
-    lastBodX = bodX;
-    lastBodY = bodY;
+    lastballX = ballX;
+    lastballY = ballY;
     scoreL++;
-  } else if (bodX <= 0) { //Left wall
+  } else if (ballX <= 0) { //Left wall
     rndDirection = random(2, 6);
     direct = START;
     movementVal = 0;
-    lastBodX = bodX;
-    lastBodY = bodY;
+    lastballX = ballX;
+    lastballY = ballY;
     scoreR++;
-  } else if (bodY <= 0) { //Upper wall
-    bodY = 0;
+  } else if (ballY <= 1) { //Upper wall
     assignDirection(UP_RIGHT, DOWN_RIGHT, UP_LEFT, DOWN_LEFT, UP_RIGHTS, DOWN_RIGHTS, UP_LEFTS, DOWN_LEFTS);
-  } else if (bodY >= 64) { //Bottom wall
-    bodY = 64;
+  } else if (ballY >= 64) { //Bottom wall
     assignDirection(DOWN_RIGHT, UP_RIGHT, DOWN_LEFT, UP_LEFT, DOWN_RIGHTS, UP_RIGHTS, DOWN_LEFTS, UP_LEFTS);
   }
 }
@@ -164,15 +162,15 @@ void draw(void) {
 
   checkCollision();
   u8g.setFont(u8g_font_helvB08);
-  /*u8g.setPrintPos(27, 35);
-  u8g.print(direct);*/
+  u8g.setPrintPos(27, 35);
+  u8g.print(movementVal);
 
   u8g.setPrintPos(32, 15);
   u8g.print(scoreL);
   u8g.setPrintPos(80, 15);
   u8g.print(scoreR);
 
-  u8g.drawPixel(bodX, bodY);
+  u8g.drawPixel(ballX, ballY);
   u8g.drawBox(64, 0, 1, 64);
   u8g.drawBox(PADDLE_XL, paddleL, 2, 5);
   u8g.drawBox(PADDLE_XR, paddleR, 2, 5);
