@@ -147,21 +147,19 @@ void draw(void) {
   u8g.drawBox(64, 0, 1, 64);
   u8g.drawBox(PADDLE_XL, paddleL, 2, 5);
   u8g.drawBox(PADDLE_XR, paddleR, 2, 5);
-  /*u8g.setPrintPos(27, 35);
-  u8g.print(ballY);*/
   
   if (scoreL <= 9) {u8g.setPrintPos(27, 15);}
-  else if (scoreL >= 10 && scoreL <= 99){u8g.setPrintPos(24, 15);}
+  else if (scoreL >= 10 && scoreL <= 99) {u8g.setPrintPos(24, 15);}
   else if (scoreL >= 100 && scoreL <= 999) {u8g.setPrintPos(21, 15);}
-  else if (scoreL >= 1000 && scoreL <= 9999){u8g.setPrintPos(18, 15);}
-  else if (scoreL >= 10000 && scoreL <= 99999){u8g.setPrintPos(15, 15);}  
+  else if (scoreL >= 1000 && scoreL <= 9999) {u8g.setPrintPos(18, 15);}
+  else if (scoreL >= 10000) {u8g.setPrintPos(15, 15);}  
   u8g.print(scoreL);
   
   if (scoreR <= 9) {u8g.setPrintPos(98, 15);}
-  else if (scoreR >= 10 && scoreR <= 99){u8g.setPrintPos(95, 15);}
+  else if (scoreR >= 10 && scoreR <= 99) {u8g.setPrintPos(95, 15);}
   else if (scoreR >= 100 && scoreR <= 999) {u8g.setPrintPos(92, 15);}
-  else if (scoreR >= 1000 && scoreR <= 9999){u8g.setPrintPos(89, 15);}
-  else if (scoreR >= 10000 && scoreR <= 99999){u8g.setPrintPos(86, 15);}
+  else if (scoreR >= 1000 && scoreR <= 9999) {u8g.setPrintPos(89, 15);}
+  else if (scoreR >= 10000) {u8g.setPrintPos(86, 15);}
   u8g.print(scoreR);
 }
 
