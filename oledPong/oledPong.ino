@@ -105,8 +105,6 @@ void movement(uint8_t i, uint8_t num) {
     ballX = lastballX - map(movementVal, SPD0, SPD1, 0, 128);
     ballY = lastballY + map(movementVal, SPD0, SPD1, 0, num);
   }
-  ballX = constrain(ballX, 0, 128);
-  ballY = constrain(ballY, 0, 64);
 }
 
 void checkCollision() {
@@ -143,7 +141,40 @@ void checkCollision() {
   }
 }
 
-void draw(void) {
+void draw(void) {  
+  u8g.setFont(u8g_font_helvB08);
+  u8g.drawPixel(ballX, ballY);
+  u8g.drawBox(64, 0, 1, 64);
+  u8g.drawBox(PADDLE_XL, paddleL, 2, 5);
+  u8g.drawBox(PADDLE_XR, paddleR, 2, 5);
+  /*u8g.setPrintPos(27, 35);
+  u8g.print(ballY);*/
+  
+  if (scoreL <= 9) {u8g.setPrintPos(27, 15);}
+  else if (scoreL >= 10 && scoreL <= 99){u8g.setPrintPos(24, 15);}
+  else if (scoreL >= 100 && scoreL <= 999) {u8g.setPrintPos(21, 15);}
+  else if (scoreL >= 1000 && scoreL <= 9999){u8g.setPrintPos(18, 15);}
+  else if (scoreL >= 10000 && scoreL <= 99999){u8g.setPrintPos(15, 15);}  
+  u8g.print(scoreL);
+  
+  if (scoreR <= 9) {u8g.setPrintPos(98, 15);}
+  else if (scoreR >= 10 && scoreR <= 99){u8g.setPrintPos(95, 15);}
+  else if (scoreR >= 100 && scoreR <= 999) {u8g.setPrintPos(92, 15);}
+  else if (scoreR >= 1000 && scoreR <= 9999){u8g.setPrintPos(89, 15);}
+  else if (scoreR >= 10000 && scoreR <= 99999){u8g.setPrintPos(86, 15);}
+  u8g.print(scoreR);
+}
+
+void setup() {
+  randomSeed(analogRead(3));
+}
+
+void loop() {
+  int16_t joyL = analogRead(JOYPIN_L);
+  int16_t joyR = analogRead(JOYPIN_R);
+  paddleL = map(joyL, 0, 1023, 0, 59);
+  paddleR = map(joyR, 0, 1023, 0, 59);
+  
   if (direct == START) {
       if (rndDirection == UP_RIGHT) {movement(UP_RIGHT, 128);}
       else if (rndDirection == UP_LEFT) {movement(UP_LEFT, 128);}
@@ -159,37 +190,12 @@ void draw(void) {
     else if (direct == DOWN_RIGHTS) {movement(DOWN_RIGHT, 16);}
     else if (direct == DOWN_LEFTS) {movement(DOWN_LEFT, 16);
   }
-
-  checkCollision();
-  u8g.setFont(u8g_font_helvB08);
-  /*u8g.setPrintPos(27, 35);
-  u8g.print(ballY);*/
-
-  u8g.setPrintPos(32, 15);
-  u8g.print(scoreL);
-  u8g.setPrintPos(80, 15);
-  u8g.print(scoreR);
-
-  u8g.drawPixel(ballX, ballY);
-  u8g.drawBox(64, 0, 1, 64);
-  u8g.drawBox(PADDLE_XL, paddleL, 2, 5);
-  u8g.drawBox(PADDLE_XR, paddleR, 2, 5);
-}
-
-void setup() {
-  randomSeed(analogRead(3));
-}
-
-void loop() {
-  int16_t joyL = analogRead(JOYPIN_L);
-  int16_t joyR = analogRead(JOYPIN_R);
-  paddleL = map(joyL, 0, 1023, 0, 59);
-  paddleR = map(joyR, 0, 1023, 0, 59);
-
+  
   u8g.firstPage();
   do {
     draw();
   } while ( u8g.nextPage() );
-
+  
+  checkCollision();
   movementVal++;
 }
