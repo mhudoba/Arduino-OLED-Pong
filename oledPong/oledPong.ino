@@ -49,13 +49,14 @@ U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_DEV_0 | U8G_I2C_OPT_NO_ACK | U8G_I2C_OPT_F
 #define PADDLE_XR 126
 
 #define SPD0 0
-#define SPD1 48 //Ball speed - the smaller this number is, the faster the ball goes
+int16_t spd = 48;
+
+bool potSpeedControl = true; //false = speed is set by "int16_t spd = [value]" above, true = speed is set by the potentiometer on SPEEDPOT_PIN (default A15, CHANGE THIS IF YOU ARE USING ARDUINO UNO)
 
 #define JOYPIN_L 2 //Analog pin of the left joystick
 #define JOYPIN_R 0 //Analog pin of the right joystick
+#define SPEEDPOT_PIN 15//Analog pin of the speed potentiometer
 
-int16_t joyYL;
-int16_t joyYR;
 int16_t paddleL;
 int16_t paddleR;
 uint8_t movementVal;
@@ -93,17 +94,17 @@ void movement(uint8_t i, uint8_t num) {
     lastballY = 32;
   }
   if (i == UP_RIGHT) {
-    ballX = lastballX + map(movementVal, SPD0, SPD1, 0, 128);
-    ballY = lastballY - map(movementVal, SPD0, SPD1, 0, num);
+    ballX = lastballX + map(movementVal, SPD0, spd, 0, 128);
+    ballY = lastballY - map(movementVal, SPD0, spd, 0, num);
   } else if (i == UP_LEFT) {
-    ballX = lastballX - map(movementVal, SPD0, SPD1, 0, 128);
-    ballY = lastballY - map(movementVal, SPD0, SPD1, 0, num);
+    ballX = lastballX - map(movementVal, SPD0, spd, 0, 128);
+    ballY = lastballY - map(movementVal, SPD0, spd, 0, num);
   } else if (i == DOWN_RIGHT) {
-    ballX = lastballX + map(movementVal, SPD0, SPD1, 0, 128);
-    ballY = lastballY + map(movementVal, SPD0, SPD1, 0, num);
+    ballX = lastballX + map(movementVal, SPD0, spd, 0, 128);
+    ballY = lastballY + map(movementVal, SPD0, spd, 0, num);
   } else if (i == DOWN_LEFT) {
-    ballX = lastballX - map(movementVal, SPD0, SPD1, 0, 128);
-    ballY = lastballY + map(movementVal, SPD0, SPD1, 0, num);
+    ballX = lastballX - map(movementVal, SPD0, spd, 0, 128);
+    ballY = lastballY + map(movementVal, SPD0, spd, 0, num);
   }
 }
 
@@ -170,6 +171,7 @@ void setup() {
 void loop() {
   int16_t joyL = analogRead(JOYPIN_L);
   int16_t joyR = analogRead(JOYPIN_R);
+  if (potSpeedControl == true){spd = map(analogRead(SPEEDPOT_PIN), 0, 1023, 28, 64);}
   paddleL = map(joyL, 0, 1023, 0, 59);
   paddleR = map(joyR, 0, 1023, 0, 59);
   
